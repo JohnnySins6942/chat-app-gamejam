@@ -27,6 +27,8 @@ namespace Michsky.UI.ModernUIPack
 
         public WindowManager manager;
 
+        private bool notIn = true;
+
 
         private void Awake()
         {
@@ -43,9 +45,15 @@ namespace Michsky.UI.ModernUIPack
                 }
             });
         }
+        private void Update()
+        {
+            if (notIn)
+            {
+
+            }
+        }
         private void Start()
         {           
-            
         }
         private void InitializeFirebase()
         {
@@ -53,13 +61,7 @@ namespace Michsky.UI.ModernUIPack
             if (auth.CurrentUser != null)
             {
                 user = auth.CurrentUser;
-                Invoke("InitializeHome", 1f);
             }
-        }
-        void InitializeHome()
-        {
-            print("initialized");
-            manager.OpenPanel("HomePanel");
         }
         public void LoginButton()
         {
