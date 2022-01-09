@@ -65,36 +65,26 @@ namespace Michsky.UI.ModernUIPack
                 var firestore = FirebaseFirestore.DefaultInstance;
                 CollectionReference userRef = firestore.Collection("userProfiles");
                 Query query = userRef.WhereEqualTo("name", friendInput.text);
-                print("worked1");
                 query.GetSnapshotAsync().ContinueWithOnMainThread((querySnapshotTask) =>
                 {
                     if (querySnapshotTask.Result.Documents != null)
                     {
                         foreach (DocumentSnapshot documentSnapshot in querySnapshotTask.Result.Documents)
                         {
-                            print("worked2");
-
-                            List<object> notification = new List<object>();
-                            Dictionary<string, object> data = documentSnapshot.ToDictionary();
-                            foreach (KeyValuePair<string, object> pair in data)
-                            {
-                                if (pair.Key == "notification")
-                                {
-                                    notification.Add(pair.Value);
-                                }
-                            }
-
-                            notification.Add(user.UserId);
+                            
                             var firestore = FirebaseFirestore.DefaultInstance;
-                            Dictionary<string, object> userData = new Dictionary<string, object>
-                            {
-                                    { "notification", notification },
-                            };
-                            firestore.Collection("userProfiles").Document(user.UserId).SetAsync(userData).ContinueWithOnMainThread(task =>
+                            Dictionary<string, object> data = documentSnapshot.ToDictionary();
+                            data.Add("notification", user.UserId);
+                            print(data);
+                            FirebaseFirestore.DefaultInstance.Collection("userProfiles").Document(user.UserId).SetAsync(data).ContinueWithOnMainThread(task =>
                             {
                                 if (task.IsCompleted)
                                 {
                                     print("added");
+                                }
+                                else
+                                {
+                                    print(task.Exception);
                                 }
                             });
                         }
