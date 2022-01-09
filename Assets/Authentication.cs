@@ -58,6 +58,7 @@ namespace Michsky.UI.ModernUIPack
         }
         void InitializeHome()
         {
+            print("initialized");
             manager.OpenPanel("HomePanel");
         }
         public void LoginButton()
