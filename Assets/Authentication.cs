@@ -192,12 +192,10 @@ namespace Michsky.UI.ModernUIPack
                                     { "name", user.DisplayName },
                                     { "bio", "Hello I'm very cool!" },
                             };
-                            firestore.Document(user.UserId).SetAsync(userData).ContinueWithOnMainThread(task => {
+                            firestore.Collection("userProfiles").Document(user.UserId).SetAsync(userData).ContinueWithOnMainThread(task => {
                                 if (task.IsCompleted)
                                 {
-                                    Debug.Log("Added data to the document in the users collection.");
                                     warningRegisterText.text = "";
-                                    Debug.LogFormat("User signed in successfully: {0} ({1})", user.DisplayName, user.Email);
                                     manager.OpenPanel("HomePanel");
                                 }
                                 else
