@@ -31,6 +31,7 @@ namespace Michsky.UI.ModernUIPack
 
         private bool notIn = false;
         FirebaseFirestore db;
+        public ChatManager chat;
 
         private void Awake()
         {
@@ -60,6 +61,7 @@ namespace Michsky.UI.ModernUIPack
             {
                 notIn = false;
                 manager.OpenPanel("HomePanel");
+                chat.SpawnChat();
             }
         }
         private void Start()
@@ -186,26 +188,9 @@ namespace Michsky.UI.ModernUIPack
                         }
                         else
                         {
-                            var firestore = FirebaseFirestore.DefaultInstance;
-                            Dictionary<string, object> userData = new Dictionary<string, object>
-                            {
-                                    { "name", user.DisplayName },
-                                    { "bio", "Hello I'm very cool!" },
-                            };
-                            firestore.Document(user.UserId).SetAsync(userData).ContinueWithOnMainThread(task => {
-                                if (task.IsCompleted)
-                                {
-                                    Debug.Log("Added data to the document in the users collection.");
                                     warningRegisterText.text = "";
                                     Debug.LogFormat("User signed in successfully: {0} ({1})", user.DisplayName, user.Email);
                                     manager.OpenPanel("HomePanel");
-                                }
-                                else
-                                {
-                                    Debug.Log("error");
-                                }
-                            });
-
                         }
                     }
                 }

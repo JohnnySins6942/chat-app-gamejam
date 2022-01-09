@@ -22,6 +22,36 @@ namespace Michsky.UI.ModernUIPack
         public TMP_InputField friendInput;
         public GameObject friendsTab;
 
+        public List<System.Object> chats = new List<System.Object>();
+        public GameObject chatPrefab;
+        public Transform viewport;
+        public void SpawnChat()
+        {
+            DocumentReference docRef = FirebaseFirestore.DefaultInstance.Collection("userChats").Document(auth.user.UserId);
+            docRef.GetSnapshotAsync().ContinueWithOnMainThread(task =>
+            {
+                DocumentSnapshot snapshot = task.Result;
+                if (snapshot.Exists)
+                {
+                    Dictionary<string, object> city = snapshot.ToDictionary();
+                    foreach (KeyValuePair<string, object> pair in city)
+                    {
+                        chats.Add(pair.Key.ToString());
+                    }
+                    print(chats.Count);
+                    foreach (var item in chats)
+                    {
+                        var v = Instantiate(chatPrefab, chatPrefab.transform.position, chatPrefab.transform.rotation);
+                        v.transform.SetParent(viewport);
+                        var b = v.GetComponent<ChatObject>();
+                        v.transform.localScale = new Vector3(1, 1, 1);
+                        b.id = item.ToString();
+                        b.findName();
+                    }
+                }
+            });
+        }
+           
         public void transfer()
         {
             if(auth.user != null)
@@ -71,16 +101,30 @@ namespace Michsky.UI.ModernUIPack
                     {
                         foreach (DocumentSnapshot documentSnapshot in querySnapshotTask.Result.Documents)
                         {
-                            
+
                             var firestore = FirebaseFirestore.DefaultInstance;
-                            Dictionary<string, object> data = documentSnapshot.ToDictionary();
-                            data.Add("notification", user.UserId);
-                            print(data);
-                            FirebaseFirestore.DefaultInstance.Collection("userProfiles").Document(user.UserId).SetAsync(data).ContinueWithOnMainThread(task =>
+                            Dictionary<string, object> userData = new Dictionary<string, object>
+                            {
+                                    { user.UserId, new List<object>() }
+                            };
+                            Dictionary<string, object> userData2 = new Dictionary<string, object>
+                            {
+                                    { documentSnapshot.Id, new List<object>() }
+                            };
+                            FirebaseFirestore.DefaultInstance.Collection("userChats").Document(documentSnapshot.Id).SetAsync(userData, SetOptions.MergeAll).ContinueWithOnMainThread(task =>
                             {
                                 if (task.IsCompleted)
                                 {
-                                    print("added");
+                                    FirebaseFirestore.DefaultInstance.Collection("userChats").Document(user.UserId).SetAsync(userData2, SetOptions.MergeAll).ContinueWithOnMainThread(task =>
+                                    {
+                                        if (task.IsCompleted)
+                                        {
+                                        }
+                                        else
+                                        {
+                                            print(task.Exception);
+                                        }
+                                    });
                                 }
                                 else
                                 {
