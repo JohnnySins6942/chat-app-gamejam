@@ -4,6 +4,8 @@ using UnityEngine;
 using Firebase.Auth;
 using Firebase;
 using TMPro;
+using Firebase.Firestore;
+using Firebase.Extensions;
 namespace Michsky.UI.ModernUIPack
 {
     public class Authentication : MonoBehaviour
@@ -28,7 +30,7 @@ namespace Michsky.UI.ModernUIPack
         public WindowManager manager;
 
         private bool notIn = true;
-
+        FirebaseFirestore db;
 
         private void Awake()
         {
@@ -58,7 +60,9 @@ namespace Michsky.UI.ModernUIPack
         }
         private void InitializeFirebase()
         {
+            db = FirebaseFirestore.DefaultInstance;
             auth = FirebaseAuth.DefaultInstance;
+
             if (auth.CurrentUser != null)
             {
                 user = auth.CurrentUser;
@@ -173,9 +177,19 @@ namespace Michsky.UI.ModernUIPack
                         }
                         else
                         {
-                            warningRegisterText.text = "";
-                            Debug.LogFormat("User signed in successfully: {0} ({1})", user.DisplayName, user.Email);
-                            manager.OpenPanel("HomePanel");
+                            DocumentReference docRef = db.Collection("userProfiles").Document(user.UserId);
+                            Dictionary<string, object> userData = new Dictionary<string, object>
+                            {
+                                    { "name", user.DisplayName },
+                                    { "bio", "Hello I'm very cool!" },
+                            };
+                            docRef.SetAsync(userData).ContinueWithOnMainThread(task => {
+                                Debug.Log("Added data to the document in the users collection.");
+                                warningRegisterText.text = "";
+                                Debug.LogFormat("User signed in successfully: {0} ({1})", user.DisplayName, user.Email);
+                                manager.OpenPanel("HomePanel");
+                            });
+
                         }
                     }
                 }
