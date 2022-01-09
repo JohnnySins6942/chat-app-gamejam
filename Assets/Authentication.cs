@@ -44,7 +44,8 @@ namespace Michsky.UI.ModernUIPack
             });
         }
         private void Start()
-        {            
+        {           
+            
         }
         private void InitializeFirebase()
         {
@@ -52,10 +53,13 @@ namespace Michsky.UI.ModernUIPack
             if (auth.CurrentUser != null)
             {
                 user = auth.CurrentUser;
-                manager.OpenPanel("HomePanel");
+                Invoke("InitializeHome", 1f);
             }
         }
-
+        void InitializeHome()
+        {
+            manager.OpenPanel("HomePanel");
+        }
         public void LoginButton()
         {
             StartCoroutine(Login(emailLoginField.text, passwordLoginField.text));
