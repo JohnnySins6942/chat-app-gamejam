@@ -29,11 +29,12 @@ namespace Michsky.UI.ModernUIPack
 
         public WindowManager manager;
 
-        private bool notIn = true;
+        private bool notIn = false;
         FirebaseFirestore db;
 
         private void Awake()
         {
+            notIn = false;
             FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
             {
                 dependencyStatus = task.Result;
@@ -47,6 +48,12 @@ namespace Michsky.UI.ModernUIPack
                 }
             });
         }
+
+        public void SignOut()
+        {
+            auth.SignOut();
+            manager.OpenPanel("LoginPanel");
+        }
         private void Update()
         {
             if (notIn)
@@ -56,7 +63,7 @@ namespace Michsky.UI.ModernUIPack
             }
         }
         private void Start()
-        {           
+        {
         }
         private void InitializeFirebase()
         {
@@ -65,6 +72,8 @@ namespace Michsky.UI.ModernUIPack
 
             if (auth.CurrentUser != null)
             {
+                print(auth.CurrentUser.DisplayName);
+                notIn = true;
                 user = auth.CurrentUser;
             }
         }
@@ -177,17 +186,24 @@ namespace Michsky.UI.ModernUIPack
                         }
                         else
                         {
-                            DocumentReference docRef = db.Collection("userProfiles").Document(user.UserId);
+                            var firestore = FirebaseFirestore.DefaultInstance;
                             Dictionary<string, object> userData = new Dictionary<string, object>
                             {
                                     { "name", user.DisplayName },
                                     { "bio", "Hello I'm very cool!" },
                             };
-                            docRef.SetAsync(userData).ContinueWithOnMainThread(task => {
-                                Debug.Log("Added data to the document in the users collection.");
-                                warningRegisterText.text = "";
-                                Debug.LogFormat("User signed in successfully: {0} ({1})", user.DisplayName, user.Email);
-                                manager.OpenPanel("HomePanel");
+                            firestore.Document(user.UserId).SetAsync(userData).ContinueWithOnMainThread(task => {
+                                if (task.IsCompleted)
+                                {
+                                    Debug.Log("Added data to the document in the users collection.");
+                                    warningRegisterText.text = "";
+                                    Debug.LogFormat("User signed in successfully: {0} ({1})", user.DisplayName, user.Email);
+                                    manager.OpenPanel("HomePanel");
+                                }
+                                else
+                                {
+                                    Debug.Log("error");
+                                }
                             });
 
                         }
@@ -196,5 +212,4 @@ namespace Michsky.UI.ModernUIPack
             }
         }
     }
-
 }
