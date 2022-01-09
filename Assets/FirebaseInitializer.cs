@@ -22,6 +22,7 @@ public class FirebaseInitializer : MonoBehaviour
             Debug.Log($"Firebase: {dependencyStatus} :)");
             onFirebaseInitialized.Invoke();
         }
+        
         else
         {
             Debug.LogError(System.String.Format("Could not resolve all Firebase dependencies: {0}", dependencyStatus));
