@@ -49,7 +49,8 @@ namespace Michsky.UI.ModernUIPack
         {
             if (notIn)
             {
-
+                notIn = false;
+                manager.OpenPanel("HomePanel");
             }
         }
         private void Start()
