@@ -4,6 +4,7 @@
     "com.google.firebase.app": "file:../GoogleFiles/com.google.firebase.app-8.7.0 (1).tgz",
     "com.google.firebase.auth": "file:../GoogleFiles/com.google.firebase.auth-8.7.0.tgz",
     "com.google.firebase.firestore": "file:../GoogleFiles/com.google.firebase.firestore-8.7.0.tgz",
+    "com.unity.adaptiveperformance.samsung.android": "3.0.0",
     "com.unity.collab-proxy": "1.15.4",
     "com.unity.feature.2d": "1.0.0",
     "com.unity.feature.mobile": "1.0.0",
